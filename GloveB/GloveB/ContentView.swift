@@ -7,27 +7,62 @@
 
 import SwiftUI
 
+import SwiftUI
+
 struct ContentView: View {
     @StateObject var bluetoothManager = BluetoothManager()
+    @State private var isScanning = false
 
     var body: some View {
         NavigationView {
             VStack(spacing: 16) {
-                Button("Start Scanning") {
+                Text("Tactile Glove")
+                    .font(.largeTitle)
+                    .fontWeight(.semibold)
+                    .padding(.top, 20)
+
+                Spacer().frame(height: 40)
+
+                Text("🔍")
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    //.background(Color.blue.opacity(0.2))
+                    .cornerRadius(10)
+                    .font(.headline)
+
+                Button(action: {
+                    isScanning = true
                     bluetoothManager.startScanning()
+                }) {
+                    Text(isScanning
+                         ? (bluetoothManager.discoveredPeripherals.isEmpty ? "Searching.." : "Search Again")
+                         : "Start Searching")
+                        .frame(maxWidth: .infinity)
+                        .frame(height: UIScreen.main.bounds.height / 6)
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                        .font(.title2)
                 }
-                .buttonStyle(.borderedProminent)
 
                 List {
                     ForEach(bluetoothManager.discoveredPeripherals, id: \..identifier) { peripheral in
-                        HStack {
+                        VStack(alignment: .leading) {
                             Text(peripheral.name ?? "Unnamed Device")
-                            Spacer()
-                            Button("Connect") {
+                                .font(.headline)
+                            Button(action: {
                                 bluetoothManager.connect(to: peripheral)
+                            }) {
+                                Text("Connect")
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: UIScreen.main.bounds.height / 6)
+                                    .background(Color.blue)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(10)
+                                    .font(.title2)
                             }
-                            .buttonStyle(.bordered)
                         }
+                        .padding(.vertical, 10)
                     }
                 }
 
@@ -44,8 +79,7 @@ struct ContentView: View {
                 }
             }
             .padding()
-            .navigationTitle("Tactile Glove")
+            .navigationBarHidden(true)
         }
     }
 }
-
